@@ -10,6 +10,7 @@ import HomeDashboard from "./components/HomeDashboard";
 import StageHeader from "./components/StageHeader";
 import ProblemStage from "./interactions/registry";
 import { ButtonRuleExplorer } from "./interactions/ButtonInteractions";
+import { preloadPython } from "./lib/pythonRunner";
 
 const STAGES = ["요구 찾기", "작은 예", "핵심 질문", "규칙 발견", "해결 전략", "코드 확인"];
 
@@ -55,6 +56,12 @@ export default function App() {
     setStageByProblem(readRecord<StoredStages>("koi-stages"));
     setNotes(readRecord<StoredNotes>("koi-notes"));
   }, []);
+
+  // STAGES[4] is 해결 전략, the step right before 코드 확인, so the Python
+  // runtime is already cached by the time the student runs their first program.
+  useEffect(() => {
+    if (stage >= 4) preloadPython();
+  }, [stage]);
 
   useEffect(() => {
     if (!drawerOpen) return;

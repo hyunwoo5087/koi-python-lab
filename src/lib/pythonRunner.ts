@@ -25,6 +25,17 @@ function loadSkulpt() {
   return skulptPromise;
 }
 
+// Skulpt is a ~230 kB (gzip) lazy chunk, so the first "코드 실행" click would
+// otherwise stall while it downloads. Call this once the student is one step
+// away from the code stage to warm the cache; it is safe to call repeatedly.
+export function preloadPython() {
+  void loadSkulpt().catch(() => {
+    // A failed warm-up is not actionable here — runPython retries and surfaces
+    // the error where the student can see it.
+    skulptPromise = null;
+  });
+}
+
 export function cleanOutput(text: string) {
   return text
     .replace(/\r/g, "")

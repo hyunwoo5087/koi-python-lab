@@ -1,8 +1,8 @@
 name: Build check
 
+# Pushes to main are already built and type-checked by deploy.yml, so this
+# workflow only guards pull requests.
 on:
-  push:
-    branches: [main, stitch-redesign]
   pull_request:
     branches: [main]
 

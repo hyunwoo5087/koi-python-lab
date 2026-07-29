@@ -17,8 +17,28 @@ type CheckState =
   | { kind: "running"; current: number; total: number; mode: "sample" | "all" }
   | { kind: "checked"; results: TestResult[]; mode: "sample" | "all" };
 
+// The editor unmounts whenever the student steps away from 코드 확인 or opens
+// another problem, so the draft has to outlive the component.
+function readSavedCode(problemId: string) {
+  try {
+    const all = JSON.parse(localStorage.getItem("koi-code") || "{}");
+    return typeof all?.[problemId] === "string" ? all[problemId] : "";
+  } catch {
+    return "";
+  }
+}
+
+function saveCode(problemId: string, code: string) {
+  try {
+    const all = JSON.parse(localStorage.getItem("koi-code") || "{}");
+    localStorage.setItem("koi-code", JSON.stringify({ ...all, [problemId]: code }));
+  } catch {
+    // A full or blocked storage must not stop the student from running code.
+  }
+}
+
 export default function CodePractice({ problemId, onPass }: { problemId: string; onPass: () => void }) {
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(() => readSavedCode(problemId));
   const [state, setState] = useState<CheckState>({ kind: "idle" });
   const problemTests = codeTests[problemId] ?? [];
 
@@ -74,7 +94,7 @@ export default function CodePractice({ problemId, onPass }: { problemId: string;
             <span className="sr-only">내 파이썬 코드</span>
             <textarea
               value={code}
-              onChange={(event) => { setCode(event.target.value); setState({ kind: "idle" }); }}
+              onChange={(event) => { setCode(event.target.value); saveCode(problemId, event.target.value); setState({ kind: "idle" }); }}
               spellCheck={false}
               autoCapitalize="off"
               autoCorrect="off"

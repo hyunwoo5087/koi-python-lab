@@ -46,6 +46,7 @@ export default function App() {
   const [started, setStarted] = useState<string[]>([]);
   const [stageByProblem, setStageByProblem] = useState<StoredStages>({});
   const [notes, setNotes] = useState<StoredNotes>({});
+  const [rules, setRules] = useState<StoredNotes>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const problem = useMemo(() => problems.find((item) => item.id === selected) ?? problems[0], [selected]);
@@ -55,6 +56,7 @@ export default function App() {
     setStarted(readArray("koi-started"));
     setStageByProblem(readRecord<StoredStages>("koi-stages"));
     setNotes(readRecord<StoredNotes>("koi-notes"));
+    setRules(readRecord<StoredNotes>("koi-rules"));
   }, []);
 
   // STAGES[4] is 해결 전략, the step right before 코드 확인, so the Python
@@ -225,7 +227,18 @@ export default function App() {
                     <div className="spark">✦</div>
                     <p>작은 예에서 발견한 규칙</p>
                     <h3>{problem.insight}</h3>
-                    <textarea placeholder="내가 발견한 규칙을 다시 적어 보세요…" />
+                    {/* Was an uncontrolled textarea: whatever the student wrote here
+                        vanished the moment they moved off the step. */}
+                    <textarea
+                      value={rules[problem.id] ?? ""}
+                      onChange={(event) => {
+                        const next = { ...rules, [problem.id]: event.target.value };
+                        setRules(next);
+                        localStorage.setItem("koi-rules", JSON.stringify(next));
+                      }}
+                      placeholder="내가 발견한 규칙을 다시 적어 보세요…"
+                      aria-label="내가 발견한 규칙"
+                    />
                     <small>정답을 외우기보다 왜 이런 규칙이 생기는지 그림을 다시 살펴보세요.</small>
                   </div>
                 )}
@@ -254,8 +267,14 @@ export default function App() {
 
               <div className="problem-footer-nav">
                 <button type="button" disabled={stage === 0} onClick={() => moveStage(stage - 1)}>← 이전 단계</button>
-                <div className="stage-progress-line" aria-label={`현재 ${stage + 1}단계`}>
-                  {STAGES.map((_, index) => <i key={index} className={index <= stage ? "filled" : ""} />)}
+                {/* The dots and the old "STEP n 진행률 nn%" bar below said the same
+                    thing twice, and that label read as progress *within* the step
+                    rather than through the six of them. One indicator, worded plainly. */}
+                <div className="stage-progress-line">
+                  <div className="stage-dots" aria-hidden="true">
+                    {STAGES.map((_, index) => <i key={index} className={index <= stage ? "filled" : ""} />)}
+                  </div>
+                  <span>6단계 중 <b>{stage + 1}단계</b> · {STAGES[stage]}</span>
                 </div>
                 <button
                   type="button"
@@ -267,11 +286,6 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="problem-progress-bar">
-                <span>STEP {stage + 1} 진행률</span>
-                <i><u style={{ width: `${Math.round(((stage + 1) / 6) * 100)}%` }} /></i>
-                <b>{Math.round(((stage + 1) / 6) * 100)}%</b>
-              </div>
             </section>
           )}
         </main>

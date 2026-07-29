@@ -115,7 +115,6 @@ export default function App() {
     <div className="app-frame">
       <AppHeader
         view={view}
-        stage={stage}
         stages={STAGES}
         onHome={() => setView("home")}
         onOpenMenu={() => setDrawerOpen(true)}

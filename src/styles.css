@@ -1,3 +1,18 @@
+/* Pretendard was named as the primary family but never actually loaded, so the
+   UI fell back to Malgun Gothic / Apple SD Gothic Neo. Those have no 800/900
+   face, and this stylesheet asks for weight 900 in 68 places at 9-11px, so the
+   browser synthesised bold and the small Korean labels smeared. This is a
+   variable subset (2350 KS X 1001 syllables + every glyph the app ships),
+   covering weights 100-900 in one 468 kB file.
+   Regenerate: see scripts/build-font-subset.sh */
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./fonts/PretendardVariable.subset.woff2") format("woff2");
+}
+
 :root{--ink:#17324d;--muted:#65758b;--paper:#fffdf8;--line:#dfe7ec;--mint:#35a7a0;--yellow:#ffd76a}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f4f8f7;color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere}button,input,textarea{font:inherit}button{cursor:pointer}img,svg{max-width:100%}.workspace>*,.stage-body>*,.problem-head>*,.experiment>*{min-width:0}
 .topbar{height:70px;padding:0 max(28px,calc((100vw - 1380px)/2));display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #e5ecef;position:sticky;top:0;z-index:20}.brand{font-weight:900;font-size:20px;letter-spacing:-.4px}.brand span{color:#fff;background:var(--mint);border-radius:10px;padding:6px 8px;margin-right:6px}.progress-mini{font-size:14px;color:var(--muted);background:#eff6f4;padding:8px 13px;border-radius:99px}.progress-mini b{color:var(--mint);font-size:18px}
@@ -241,6 +256,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px soli
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .app-frame{min-height:100vh;background:var(--app-bg)}
 .app-header{height:78px;position:sticky;top:0;z-index:60;display:grid;grid-template-columns:250px minmax(0,1fr) 56px;align-items:stretch;background:#fff;border-bottom:1px solid var(--app-line)}
+/* Problem pages drop the step row (StageHeader owns it), leaving brand + profile. */
+.app-header.no-steps{grid-template-columns:250px minmax(0,1fr)}
+.app-header.no-steps .profile-button{justify-self:end;margin-right:22px}
 .header-brand-row{display:flex;align-items:center;padding:0 22px;border-right:1px solid var(--app-line)}
 .brand-button{border:0;background:transparent;display:flex;align-items:center;gap:10px;color:var(--app-ink);font-size:17px;font-weight:700;padding:8px;border-radius:12px}
 .brand-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--app-teal);color:#fff;font-weight:900;box-shadow:inset 0 -3px 0 #056e68}

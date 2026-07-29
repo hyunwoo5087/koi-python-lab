@@ -1,14 +1,13 @@
 type HeaderProps = {
   view: "home" | "problem";
-  stage: number;
   stages: string[];
   onHome: () => void;
   onOpenMenu: () => void;
 };
 
-export default function AppHeader({ view, stage, stages, onHome, onOpenMenu }: HeaderProps) {
+export default function AppHeader({ view, stages, onHome, onOpenMenu }: HeaderProps) {
   return (
-    <header className="app-header">
+    <header className={`app-header ${view === "problem" ? "no-steps" : ""}`}>
       <div className="header-brand-row">
         <button className="mobile-menu-button" type="button" onClick={onOpenMenu} aria-label="문제 목록 열기">
           ☰
@@ -19,14 +18,18 @@ export default function AppHeader({ view, stage, stages, onHome, onOpenMenu }: H
         </button>
       </div>
 
-      <div className={`header-steps ${view === "home" ? "overview" : ""}`} aria-label="6단계 학습 과정">
-        {stages.map((label, index) => (
-          <div key={label} className={view === "problem" && index === stage ? "current" : ""}>
-            <small>STEP {index + 1}</small>
-            <span>{label}</span>
-          </div>
-        ))}
-      </div>
+      {/* On a problem page StageHeader already shows these six steps, and does it
+          interactively, so repeating them here would only duplicate the row. */}
+      {view === "home" && (
+        <div className="header-steps overview" aria-label="6단계 학습 과정">
+          {stages.map((label, index) => (
+            <div key={label}>
+              <small>STEP {index + 1}</small>
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <button className="profile-button" type="button" aria-label="학습자 메뉴">●</button>
     </header>

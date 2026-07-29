@@ -18,7 +18,7 @@ export default function HomeDashboard({ problems, done, started, stageByProblem,
   return (
     <section className="dashboard-page">
       <div className="dashboard-summary">
-        <div className="summary-label">OVERALL PROGRESS</div>
+        <div className="summary-label">전체 진행률</div>
         <div className="summary-number"><b>{percent}</b><span>%</span></div>
         <div className="summary-track"><i style={{ width: `${percent}%` }} /></div>
         <div className="summary-stats">

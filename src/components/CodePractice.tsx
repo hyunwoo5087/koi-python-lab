@@ -97,7 +97,7 @@ export default function CodePractice({ problemId, steps, onPass }: { problemId: 
   return (
     <section className="code-workbench">
       <div className="code-workbench-head">
-        <div><small>FINAL STEP</small><h2>코드 확인 및 최종 실행</h2></div>
+        <div><small>마지막 단계</small><h2>코드 확인 및 최종 실행</h2></div>
         <span>🔒 브라우저 안에서만 실행</span>
       </div>
 

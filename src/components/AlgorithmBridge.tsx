@@ -18,7 +18,9 @@ type Props = {
  */
 export default function AlgorithmBridge({ steps, code, codeNotes }: Props) {
   const [opened, setOpened] = useState<number[]>([]);
-  const lines = code.split("\n");
+  // Blank lines are spacing, not a step to translate. Rendering them produced empty
+  // black boxes and pushed every note one row away from the line it describes.
+  const lines = code.split("\n").filter((line) => line.trim());
   const toggle = (index: number) =>
     setOpened((list) => (list.includes(index) ? list.filter((x) => x !== index) : [...list, index]));
 

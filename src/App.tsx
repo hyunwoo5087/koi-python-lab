@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { problems } from "./data/problems";
-import { strategyGuides, variableGuides } from "./data/guides";
+import { codeLineNotes, variableGuides } from "./data/guides";
 import GeneralStrategyExplorer from "./components/GeneralStrategyExplorer";
 import AlgorithmBridge from "./components/AlgorithmBridge";
+import PythonHelp from "./components/PythonHelp";
 import CodePractice from "./components/CodePractice";
 import AppHeader from "./components/AppHeader";
 import ProblemSidebar from "./components/ProblemSidebar";
@@ -148,8 +149,8 @@ export default function App() {
 
               <div className="problem-page-title">
                 <div>
-                  <span>PROBLEM {problem.id}</span>
-                  <small>problem_{problem.id.toLowerCase()}_simulation.py</small>
+                  <span>문제 {problem.id}</span>
+                  <small>{problem.tags.join(" · ")}</small>
                 </div>
                 <h1>{stage === 1 ? problem.question : problem.title}</h1>
                 <p>{stage === 1 ? problem.story : `${STAGES[stage]} 단계에서 문제의 핵심을 차근차근 찾아봅니다.`}</p>
@@ -251,13 +252,16 @@ export default function App() {
                       key={problem.id}
                       steps={problem.steps}
                       code={problem.code}
-                      codeNotes={strategyGuides[problem.id]?.codeNotes}
+                      codeNotes={codeLineNotes[problem.id]}
                     />
                   </div>
                 )}
 
                 {stage === 5 && (
                   <div className="code-stage-new">
+                    {/* The plan the student wrote is right above the editor, and this is
+                        where they need the syntax for it. */}
+                    <PythonHelp />
                     <CodePractice key={problem.id} problemId={problem.id} steps={problem.steps} onPass={finish} />
                     <div className="solution-toggle">
                       <div><span>막힐 때 비교하는 여러 풀이 중 하나</span><h3>가장 쉬운 풀이 예시를 볼까요?</h3></div>

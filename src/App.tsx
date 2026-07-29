@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { problems } from "./data/problems";
-import { variableGuides } from "./data/guides";
+import { strategyGuides, variableGuides } from "./data/guides";
 import GeneralStrategyExplorer from "./components/GeneralStrategyExplorer";
+import AlgorithmBridge from "./components/AlgorithmBridge";
 import CodePractice from "./components/CodePractice";
 import AppHeader from "./components/AppHeader";
 import ProblemSidebar from "./components/ProblemSidebar";
@@ -243,11 +244,21 @@ export default function App() {
                   </div>
                 )}
 
-                {stage === 4 && (problem.id === "O" ? <ButtonRuleExplorer /> : <GeneralStrategyExplorer key={problem.id} p={problem} />)}
+                {stage === 4 && (
+                  <div className="strategy-stage">
+                    {problem.id === "O" ? <ButtonRuleExplorer /> : <GeneralStrategyExplorer key={problem.id} p={problem} />}
+                    <AlgorithmBridge
+                      key={problem.id}
+                      steps={problem.steps}
+                      code={problem.code}
+                      codeNotes={strategyGuides[problem.id]?.codeNotes}
+                    />
+                  </div>
+                )}
 
                 {stage === 5 && (
                   <div className="code-stage-new">
-                    <CodePractice key={problem.id} problemId={problem.id} onPass={finish} />
+                    <CodePractice key={problem.id} problemId={problem.id} steps={problem.steps} onPass={finish} />
                     <div className="solution-toggle">
                       <div><span>막힐 때 비교하는 여러 풀이 중 하나</span><h3>가장 쉬운 풀이 예시를 볼까요?</h3></div>
                       <button type="button" onClick={() => setRevealed(!revealed)}>{revealed ? "코드 가리기" : "풀이 예시 열기"}</button>
@@ -258,7 +269,14 @@ export default function App() {
                         <div className="variable-guide"><span>이름표 먼저 읽기</span>{variableGuides[problem.id]?.map((item) => { const [name, meaning] = item.split(" = "); return <div key={item}><code>{name}</code><i>→</i><b>{meaning}</b></div>; })}</div>
                         <pre><code>{problem.code}</code></pre>
                         <div className="verify"><span>손으로 검산</span><b>{problem.sample}</b></div>
-                        <button className="complete" type="button" onClick={finish}>{done.includes(problem.id) ? "✓ 이 문제를 완료했어요" : "문제 해결 완료하기"}</button>
+                        {/* No completion button here: reading the example is not solving
+                            the problem, and the panel above promises that the record is
+                            saved only when every test passes. CodePractice calls finish(). */}
+                        <div className="example-closing">
+                          {done.includes(problem.id)
+                            ? "✓ 이 문제는 이미 완료했어요."
+                            : "예시를 참고했다면, 위 편집기에 내 코드로 다시 써서 모든 테스트를 통과해 보세요."}
+                        </div>
                       </div>
                     )}
                   </div>

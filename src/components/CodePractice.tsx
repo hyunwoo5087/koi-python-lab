@@ -37,8 +37,22 @@ function saveCode(problemId: string, code: string) {
   }
 }
 
-export default function CodePractice({ problemId, onPass }: { problemId: string; onPass: () => void }) {
-  const [code, setCode] = useState(() => readSavedCode(problemId));
+// A blank editor after five steps of guided discovery is a cliff. Seed it with the
+// plan the student just worked through, one comment per step, so writing code means
+// filling in under each line rather than starting from nothing.
+function pseudocodeScaffold(steps: string[]) {
+  const body = steps.map((step, index) => `# ${index + 1}. ${step}\n\n`).join("");
+  return `# 아래 순서대로 한 줄씩 코드로 바꿔 보세요.\n\n${body}`;
+}
+
+// Comments and blank lines do not run, so a scaffold-only submission is "not started"
+// rather than a wrong answer, and deserves a different message.
+function hasRealCode(code: string) {
+  return code.split("\n").some((line) => line.trim() && !line.trim().startsWith("#"));
+}
+
+export default function CodePractice({ problemId, steps, onPass }: { problemId: string; steps: string[]; onPass: () => void }) {
+  const [code, setCode] = useState(() => readSavedCode(problemId) || pseudocodeScaffold(steps));
   const [state, setState] = useState<CheckState>({ kind: "idle" });
   const problemTests = codeTests[problemId] ?? [];
 
@@ -48,8 +62,8 @@ export default function CodePractice({ problemId, onPass }: { problemId: string;
   }, [state]);
 
   async function runTests(mode: "sample" | "all") {
-    if (!code.trim()) {
-      setState({ kind: "checked", mode, results: [{ name: "코드 입력", input: "", expected: "", actual: "", passed: false, hint: "먼저 코드 칸에 내 코드를 쓰거나 붙여 넣어 주세요.", error: "코드가 비어 있어요." }] });
+    if (!hasRealCode(code)) {
+      setState({ kind: "checked", mode, results: [{ name: "코드 입력", input: "", expected: "", actual: "", passed: false, hint: "#로 시작하는 줄은 사람을 위한 메모라 컴퓨터가 실행하지 않아요. 각 순서 아래에 파이썬 코드를 한 줄씩 써 보세요.", error: "아직 실행할 코드가 없어요." }] });
       return;
     }
 
@@ -98,7 +112,7 @@ export default function CodePractice({ problemId, onPass }: { problemId: string;
               spellCheck={false}
               autoCapitalize="off"
               autoCorrect="off"
-              placeholder={"# 여기에 내 코드를 작성하세요.\n# 예: n = int(input())\n\n"}
+              placeholder={"# 각 순서 아래에 파이썬 코드를 한 줄씩 써 보세요.\n# 예: n = int(input())\n\n"}
               aria-label="내 파이썬 코드"
             />
           </label>

@@ -40,8 +40,12 @@ function saveCode(problemId: string, code: string) {
 // A blank editor after five steps of guided discovery is a cliff. Seed it with the
 // plan the student just worked through, one comment per step, so writing code means
 // filling in under each line rather than starting from nothing.
-function pseudocodeScaffold(steps: string[]) {
-  const body = steps.map((step, index) => `# ${index + 1}. ${step}\n\n`).join("");
+//
+// This takes codePlan, not problem.steps: the latter includes the hands-on steps
+// used to find the rule, which never become code, so a student saw four comments
+// for a two-line program.
+function pseudocodeScaffold(plan: string[]) {
+  const body = plan.map((step, index) => `# ${index + 1}. ${step}\n\n`).join("");
   return `# 아래 순서대로 한 줄씩 코드로 바꿔 보세요.\n\n${body}`;
 }
 
@@ -51,8 +55,8 @@ function hasRealCode(code: string) {
   return code.split("\n").some((line) => line.trim() && !line.trim().startsWith("#"));
 }
 
-export default function CodePractice({ problemId, steps, onPass }: { problemId: string; steps: string[]; onPass: () => void }) {
-  const [code, setCode] = useState(() => readSavedCode(problemId) || pseudocodeScaffold(steps));
+export default function CodePractice({ problemId, plan, onPass }: { problemId: string; plan: string[]; onPass: () => void }) {
+  const [code, setCode] = useState(() => readSavedCode(problemId) || pseudocodeScaffold(plan));
   const [state, setState] = useState<CheckState>({ kind: "idle" });
   const problemTests = codeTests[problemId] ?? [];
 

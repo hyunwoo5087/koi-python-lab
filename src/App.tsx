@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { problems } from "./data/problems";
-import { codeLineNotes, variableGuides } from "./data/guides";
+import { codeLineNotes, codePlan, variableGuides } from "./data/guides";
 import GeneralStrategyExplorer from "./components/GeneralStrategyExplorer";
 import AlgorithmBridge from "./components/AlgorithmBridge";
 import PythonHelp from "./components/PythonHelp";
@@ -251,6 +251,7 @@ export default function App() {
                     <AlgorithmBridge
                       key={problem.id}
                       steps={problem.steps}
+                      plan={codePlan[problem.id]}
                       code={problem.code}
                       codeNotes={codeLineNotes[problem.id]}
                     />
@@ -262,7 +263,7 @@ export default function App() {
                     {/* The plan the student wrote is right above the editor, and this is
                         where they need the syntax for it. */}
                     <PythonHelp />
-                    <CodePractice key={problem.id} problemId={problem.id} steps={problem.steps} onPass={finish} />
+                    <CodePractice key={problem.id} problemId={problem.id} plan={codePlan[problem.id]} onPass={finish} />
                     <div className="solution-toggle">
                       <div><span>막힐 때 비교하는 여러 풀이 중 하나</span><h3>가장 쉬운 풀이 예시를 볼까요?</h3></div>
                       <button type="button" onClick={() => setRevealed(!revealed)}>{revealed ? "코드 가리기" : "풀이 예시 열기"}</button>

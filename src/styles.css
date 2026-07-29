@@ -14,7 +14,7 @@
 }
 
 :root{--ink:#17324d;--muted:#65758b;--paper:#fffdf8;--line:#dfe7ec;--mint:#35a7a0;--yellow:#ffd76a}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f4f8f7;color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere}button,input,textarea{font:inherit}button{cursor:pointer}img,svg{max-width:100%}.workspace>*,.stage-body>*,.problem-head>*,.experiment>*{min-width:0}
+*{box-sizing:border-box}[hidden]{display:none!important}html{scroll-behavior:smooth}body{margin:0;background:#f4f8f7;color:var(--ink);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere}button,input,textarea{font:inherit}button{cursor:pointer}img,svg{max-width:100%}.workspace>*,.stage-body>*,.problem-head>*,.experiment>*{min-width:0}
 .topbar{height:70px;padding:0 max(28px,calc((100vw - 1380px)/2));display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #e5ecef;position:sticky;top:0;z-index:20}.brand{font-weight:900;font-size:20px;letter-spacing:-.4px}.brand span{color:#fff;background:var(--mint);border-radius:10px;padding:6px 8px;margin-right:6px}.progress-mini{font-size:14px;color:var(--muted);background:#eff6f4;padding:8px 13px;border-radius:99px}.progress-mini b{color:var(--mint);font-size:18px}
 .hero{max-width:1380px;margin:auto;padding:46px 28px 34px;display:flex;justify-content:space-between;align-items:center;gap:30px}.eyebrow{margin:0 0 8px;color:var(--mint);font-weight:900}.hero h1{font-size:48px;letter-spacing:-2.5px;margin:0 0 12px;line-height:1.1}.hero h1 em{font-style:normal;color:var(--mint);position:relative}.hero h1 em:after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:8px;background:var(--yellow);z-index:-1;border-radius:9px}.hero>div>p:last-child{font-size:18px;line-height:1.7;color:var(--muted);margin:0}.hero-card{min-width:330px;background:var(--ink);color:#fff;padding:22px;border-radius:24px;box-shadow:0 16px 40px #17324d22}.route{display:flex;gap:7px;margin-bottom:16px}.route span{width:28px;height:28px;border:1px solid #ffffff55;border-radius:50%;display:grid;place-items:center;font-size:12px}.route .now{background:var(--yellow);color:var(--ink);border-color:var(--yellow);font-weight:900}.route .past{background:var(--mint);border-color:var(--mint)}.hero-card strong{display:block;font-size:22px}.hero-card small{color:#c4d2dc}
 .workspace{max-width:1380px;margin:0 auto 70px;padding:0 28px;display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start}aside{background:#fff;border:1px solid var(--line);border-radius:24px;padding:17px;position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto}.aside-title{display:flex;justify-content:space-between;padding:5px 5px 15px}.aside-title span{color:var(--mint);font-weight:900}.map{display:grid;gap:6px}.map button{border:0;background:transparent;border-radius:14px;padding:9px;display:flex;align-items:center;gap:10px;text-align:left;color:var(--ink)}.map button:hover{background:#f2f7f6}.map button.active{background:color-mix(in srgb,var(--accent) 12%,white);box-shadow:inset 3px 0 var(--accent)}.map button>span{min-width:34px;height:34px;border-radius:11px;background:#edf2f3;display:grid;place-items:center;font-weight:900}.map button.active>span,.map button.done>span{background:var(--accent);color:white}.map b{display:block;font-size:13px}.map small{font-size:11px;color:var(--muted)}
@@ -157,7 +157,7 @@
 .tree-svg .tree-icon{font-size:1.7px;stroke-width:0}
 
 /* 헤더의 진행 표시 — 예전의 동작 없던 초록 점 자리. */
-.map-button{justify-self:end;margin-right:22px;display:grid;place-items:center;gap:1px;min-width:52px;height:44px;padding:0 10px;border:1px solid var(--app-line);border-radius:13px;background:#fff;color:var(--ink)}
+.map-button{align-self:center;justify-self:end;margin-right:22px;display:grid;place-items:center;gap:1px;min-width:62px;height:46px;padding:0 10px;border:1px solid var(--app-line);border-radius:13px;background:#fff;color:var(--ink)}
 .map-button b{font-size:15px;font-weight:900;color:var(--app-teal)}
 .map-button b i{font-style:normal;font-size:11px;color:var(--muted)}
 .map-button small{font-size:9px;font-weight:800;color:var(--muted)}
@@ -209,6 +209,19 @@
   .map-link{display:none}
   .map-stop{width:88px}
 }
+
+.detail-toggle button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border:1px solid var(--app-line);border-radius:16px;padding:16px 20px;color:var(--ink);text-align:left}
+.detail-toggle button:hover{background:#f8fbfa}
+.detail-toggle b{display:block;font-size:15px;font-weight:900}
+.detail-toggle small{display:block;margin-top:3px;font-size:12px;color:var(--muted);font-weight:700}
+.detail-toggle i{font-style:normal;font-size:12px;font-weight:900;color:var(--app-teal);white-space:nowrap}
+
+/* 지도 안의 다음 미션 줄 — 예전 "계속 학습" 배너를 대신합니다. */
+.map-next{margin:0 0 20px;width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid color-mix(in srgb,var(--problem-color) 45%,white);background:color-mix(in srgb,var(--problem-color) 9%,white);border-radius:15px;padding:13px 18px;color:var(--ink);text-align:left}
+.map-next small{display:block;font-size:11px;font-weight:900;color:var(--problem-color)}
+.map-next b{display:block;margin-top:3px;font-size:16px;font-weight:900}
+.map-next i{font-style:normal;font-size:13px;font-weight:900;color:var(--problem-color);white-space:nowrap}
+.map-next:hover{background:color-mix(in srgb,var(--problem-color) 15%,white)}
 
 .strategy-stage{display:grid;gap:20px}
 
@@ -497,10 +510,8 @@ body{background:var(--app-bg);color:var(--app-ink)}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--app-teal) 32%,white);outline-offset:2px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .app-frame{min-height:100vh;background:var(--app-bg)}
-.app-header{height:78px;position:sticky;top:0;z-index:60;display:grid;grid-template-columns:250px minmax(0,1fr) 56px;align-items:stretch;background:#fff;border-bottom:1px solid var(--app-line)}
+.app-header{height:78px;position:sticky;top:0;z-index:60;display:grid;grid-template-columns:250px minmax(0,1fr);align-items:stretch;background:#fff;border-bottom:1px solid var(--app-line)}
 /* Problem pages drop the step row (StageHeader owns it), leaving brand + profile. */
-.app-header.no-steps{grid-template-columns:250px minmax(0,1fr)}
-.app-header.no-steps .profile-button{justify-self:end;margin-right:22px}
 .header-brand-row{display:flex;align-items:center;padding:0 22px;border-right:1px solid var(--app-line)}
 .brand-button{border:0;background:transparent;display:flex;align-items:center;gap:10px;color:var(--app-ink);font-size:17px;font-weight:700;padding:8px;border-radius:12px}
 .brand-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--app-teal);color:#fff;font-weight:900;box-shadow:inset 0 -3px 0 #056e68}

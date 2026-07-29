@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import type { CSSProperties } from "react";
 import type { Problem } from "../data/problems";
 
@@ -11,6 +11,7 @@ type HomeProps = {
 };
 
 export default function HomeDashboard({ problems, done, started, stageByProblem, onSelect }: HomeProps) {
+  const [showDetail, setShowDetail] = useState(false);
   const inProgressCount = started.filter((id) => !done.includes(id)).length;
   const active = problems.find((problem) => started.includes(problem.id) && !done.includes(problem.id));
   const next = active ?? problems.find((problem) => !done.includes(problem.id)) ?? problems[0];
@@ -33,6 +34,18 @@ export default function HomeDashboard({ problems, done, started, stageByProblem,
           </div>
           <div className="map-count"><b>{done.length}</b><span>/ {problems.length}</span></div>
         </div>
+
+        {/* 배너를 따로 두는 대신 지도 안에 한 줄로 둡니다. 아래 깃발이 가리키는
+            정거장과 같은 문제라, 두 곳이 서로를 설명해 줘요. */}
+        {!allDone && (
+          <button className="map-next" type="button" style={{ "--problem-color": next.color } as CSSProperties} onClick={() => onSelect(next.id)}>
+            <span>
+              <small>{active ? "이어서 풀기" : "다음 미션"}</small>
+              <b>{next.title}</b>
+            </span>
+            <i>{active ? "계속하기" : "시작하기"} →</i>
+          </button>
+        )}
 
         <div className="map-track">
           {rows.map((row, rowIndex) => (
@@ -75,21 +88,20 @@ export default function HomeDashboard({ problems, done, started, stageByProblem,
         )}
       </div>
 
-      <div className="resume-banner" style={{ "--problem-color": next.color } as CSSProperties}>
-        <div>
-          <small>{active ? "계속 학습" : done.length === problems.length ? "다시 도전" : "오늘의 추천"}</small>
-          <h2>{next.title}</h2>
-          <p>{next.story}</p>
-        </div>
-        <button type="button" onClick={() => onSelect(next.id)}>{active ? "계속하기" : "지금 시작하기"} →</button>
+      {/* 지도·계속 학습 배너·문제 카드가 한 화면에 모두 펼쳐져 있어, 같은 15문제를
+          세 번 읽게 되고 어디를 봐야 할지 알기 어려웠습니다. 지도만 남기고 나머지는
+          접었습니다. "계속 학습"은 지도의 여기부터 정거장이 이미 가리키고 있어요. */}
+      <div className="detail-toggle">
+        <button type="button" onClick={() => setShowDetail(!showDetail)} aria-expanded={showDetail}>
+          <span>
+            <b>문제별 해결 상황</b>
+            <small>완료 {done.length} · 진행 중 {inProgressCount} · 시작 전 {problems.length - done.length - inProgressCount}</small>
+          </span>
+          <i>{showDetail ? "접기 ▲" : "펼치기 ▼"}</i>
+        </button>
       </div>
 
-      <div className="dashboard-section-head">
-        <div><h2>문제별 해결 상황</h2><span>완료 {done.length} · 진행 중 {inProgressCount} · 시작 전 {problems.length - done.length - inProgressCount}</span></div>
-        <p>어느 단계까지 갔는지 확인하고 이어서 풀어 보세요.</p>
-      </div>
-
-      <div className="problem-card-grid">
+      <div className="problem-card-grid" hidden={!showDetail}>
         {problems.map((problem) => {
           const isDone = done.includes(problem.id);
           const isStarted = started.includes(problem.id) && !isDone;

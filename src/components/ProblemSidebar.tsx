@@ -14,11 +14,11 @@ type SidebarProps = {
 
 export default function ProblemSidebar({ problems, selected, done, started, onSelect, onHome, mobile = false, onClose }: SidebarProps) {
   return (
-    <aside className={`problem-sidebar ${mobile ? "mobile" : ""}`} aria-label="문제 지도">
+    <aside className={`problem-sidebar ${mobile ? "mobile" : ""}`} aria-label="문제 목록">
       <div className="sidebar-head">
         <div>
-          <small>KOI PYTHON LAB</small>
-          <h2>문제 지도</h2>
+          <h2>문제 목록</h2>
+          <small>15개 문제</small>
         </div>
         {mobile && <button type="button" onClick={onClose} aria-label="문제 목록 닫기">×</button>}
       </div>

@@ -121,8 +121,6 @@ export default function App() {
   return (
     <div className="app-frame">
       <AppHeader
-        view={view}
-        stages={STAGES}
         done={done.length}
         total={problems.length}
         onHome={() => setView("home")}

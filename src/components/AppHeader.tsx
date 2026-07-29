@@ -1,15 +1,15 @@
 type HeaderProps = {
-  view: "home" | "problem";
-  stages: string[];
   done: number;
   total: number;
   onHome: () => void;
   onOpenMenu: () => void;
 };
 
-export default function AppHeader({ view, stages, done, total, onHome, onOpenMenu }: HeaderProps) {
+// 여섯 단계 목록은 헤더에서 뺐습니다. 문제 안에서는 StageHeader가 이미 같은 줄을
+// 누를 수 있게 보여 주고, 홈에서는 지도가 진행을 나타내므로 읽을 것만 늘었습니다.
+export default function AppHeader({ done, total, onHome, onOpenMenu }: HeaderProps) {
   return (
-    <header className={`app-header ${view === "problem" ? "no-steps" : ""}`}>
+    <header className="app-header">
       <div className="header-brand-row">
         <button className="mobile-menu-button" type="button" onClick={onOpenMenu} aria-label="문제 목록 열기">
           ☰
@@ -20,23 +20,7 @@ export default function AppHeader({ view, stages, done, total, onHome, onOpenMen
         </button>
       </div>
 
-      {/* On a problem page StageHeader already shows these six steps, and does it
-          interactively, so repeating them here would only duplicate the row. */}
-      {view === "home" && (
-        <div className="header-steps overview" aria-label="6단계 학습 과정">
-          {stages.map((label, index) => (
-            <div key={label}>
-              <small>STEP {index + 1}</small>
-              <span>{label}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* 예전에는 아무 동작 없는 초록 점이었는데 aria-label만 "학습자 메뉴"라고 읽혀,
-          누르면 뭔가 열릴 것처럼 보이고 실제로는 아무 일도 없었습니다. 눌러서 지도로
-          돌아가는 진행 상황 표시로 바꿨습니다. */}
-      <button className="map-button" type="button" onClick={onHome} aria-label={`지도로 돌아가기. 15문제 중 ${done}문제 완료`}>
+      <button className="map-button" type="button" onClick={onHome} aria-label={`지도로 돌아가기. ${total}문제 중 ${done}문제 완료`}>
         <b>{done}<i>/{total}</i></b>
         <small>지도</small>
       </button>

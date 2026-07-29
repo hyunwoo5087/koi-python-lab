@@ -95,8 +95,33 @@ export default function ProblemInteraction({p}:{p:Problem}) {
     return <div className="hands-lab lamp-lab"><div className="two-controls"><RangeControl label="가로 칸" value={a} min={1} max={5} onChange={setA}/><RangeControl label="세로 칸" value={b} min={1} max={5} onChange={setB}/></div><div className="lamp-explain"><span>가로등은 모서리 점이 아니라 <b>두 칸 사이의 선</b>에 놓아요.</span><span className="lamp-dot">●</span><span>가로등 하나가 양쪽 <b>두 칸</b>을 밝혀요.</span></div><div className="park-board" style={{"--park-cols":a,"--park-rows":b} as CSSProperties}><div className="park-cells">{Array.from({length:total},(_,i)=><span key={i} className={`light-group-${coveredBy[i]%6}`}>{i+1}</span>)}</div>{edges.map(([first,second],i)=>{const r1=Math.floor(first/a),c1=first%a,r2=Math.floor(second/a),c2=second%a;const horizontal=r1===r2;const left=horizontal?(Math.min(c1,c2)+1)/a*100:(c1+.5)/a*100;const top=horizontal?(r1+.5)/b*100:(Math.min(r1,r2)+1)/b*100;return <span key={`${first}-${second}`} className={`edge-lamp ${horizontal?"vertical-edge":"horizontal-edge"}`} style={{left:`${left}%`,top:`${top}%`}}>●</span>})}</div><div className="lamp-math"><div><span>전체 칸</span><b>{total}칸</b></div><i>두 칸씩 짝짓기</i><div><span>가장 적은 가로등</span><b>{lamps}개</b></div></div><p className="lab-coach">{total%2?`마지막 한 칸은 이웃 칸과 한 번 더 함께 밝혀야 해서 ${lamps}개가 필요해요.`:"모든 칸을 두 칸씩 짝지어 밝힐 수 있어요."}</p></div>
   }
   if(p.id==="E") {
-    const count=Math.ceil(a/2);
-    return <div className="hands-lab"><RangeControl label="가장 긴 막대 n" value={a} min={1} max={9} onChange={setA}/><div className="pairing-board">{Array.from({length:a},(_,i)=><span key={i} style={{width:`${45+(i+1)*20}px`}}><b>{i+1}</b></span>)}</div><div className="live-rule"><span>막대 {a}개</span><i>→</i><span>같은 길이로 만들 수 있는 수</span><b>{count}개</b></div><p className="lab-coach">{a%2?"가운데 막대 하나가 남아 그것도 한 개로 세어요.":"막대를 둘씩 짝지을 수 있어요."}</p></div>
+    // 관찰 질문이 "어떤 것끼리 짝짓나"인데 예전 화면은 막대를 길이순으로 늘어놓고 개수만
+    // 셌습니다. 짝짓는 장면이 없어서 1+4, 2+3을 조작으로는 찾을 수 없었어요.
+    // 길이 n을 목표로, 막대 n은 혼자, 나머지는 i와 n−i끼리 이어 붙입니다.
+    const groups:number[][]=[[a]];
+    for(let i=1;i*2<a;i++) groups.push([i,a-i]);
+    const leftover=a%2===0?a/2:null;
+    const unit=Math.min(30,240/a);
+    return <div className="hands-lab stick-lab">
+      <RangeControl label="가장 긴 막대 n" value={a} min={1} max={9} onChange={setA}/>
+      <div className="stick-source"><span>가지고 있는 막대</span><div>{Array.from({length:a},(_,i)=><b key={i} style={{width:`${(i+1)*unit}px`}}>{i+1}</b>)}</div></div>
+      <div className="stick-target">이어서 <b>길이 {a}</b>짜리를 가장 많이 만들어 봐요</div>
+      <div className="stick-groups">
+        {groups.map(parts=>
+          <div key={parts.join("-")} className="stick-group">
+            <div className="stick-bar">{parts.map((part,i)=><span key={part} style={{width:`${part*unit}px`}} className={i?"second":"first"}>{part}</span>)}</div>
+            <em>{parts.length>1?`${parts[0]}＋${parts[1]}=${a}`:`${a} 그대로`}</em>
+          </div>
+        )}
+        {leftover!==null&&
+          <div className="stick-group unused">
+            <div className="stick-bar"><span style={{width:`${leftover*unit}px`}}>{leftover}</span></div>
+            <em>짝이 없어 못 써요</em>
+          </div>}
+      </div>
+      <div className="live-rule"><span>막대 {a}개</span><i>→</i><span>같은 길이 {a}짜리</span><b>{groups.length}개</b></div>
+      <p className="lab-coach">{leftover!==null?`n이 짝수라 가운데 막대 ${leftover}은 짝지을 상대가 없어요. 그래서 ${groups.length}개예요.`:`짧은 것과 긴 것을 짝지으면 모두 길이 ${a}가 돼요. 막대 ${a}는 혼자서도 길이 ${a}랍니다.`}</p>
+    </div>
   }
   if(p.id==="F") {
     const kg=a, jars=Math.ceil(kg/5), full=Math.floor(kg/5);
@@ -125,8 +150,35 @@ export default function ProblemInteraction({p}:{p:Problem}) {
       <p className="lab-coach">{left?`${kg.toLocaleString()}kg은 5로 나누어떨어지지 않아요. 남은 ${left}kg 때문에 항아리는 하나 더 필요하지만, 그 항아리는 팔 수 없어요.`:`${kg.toLocaleString()}kg은 5로 딱 나누어떨어져서 필요한 항아리와 파는 항아리가 같아요.`}</p></div>
   }
   if(p.id==="H") {
+    // 관찰 질문은 "어느 기준부터 살펴볼까"인데 예전 화면은 점수가 어느 칸에 드는지만
+    // 보여 줬습니다. 순서를 왜 그렇게 잡아야 하는지가 안 보였어요. 두 순서로 같은 점수를
+    // 통과시켜, 낮은 기준부터 보면 첫 관문에서 멈춰 틀리는 장면을 직접 보게 합니다.
     const grade=a>=90?"A":a>=70?"B":a>=40?"C":"D";
-    return <div className="hands-lab"><RangeControl label="점수" value={a} min={0} max={100} onChange={setA}/><div className="grade-track"><span className={grade==="D"?"on":""}>0~39<b>D</b></span><span className={grade==="C"?"on":""}>40~69<b>C</b></span><span className={grade==="B"?"on":""}>70~89<b>B</b></span><span className={grade==="A"?"on":""}>90~100<b>A</b></span></div><div className="result-bubble"><span>{a}점이 들어간 칸</span><b>{grade} 등급</b></div><p className="lab-coach">점수를 움직여 등급이 바뀌는 경계인 40, 70, 90을 찾아보세요.</p></div>
+    const walk=(gates:[number,string][])=>{
+      for(let i=0;i<gates.length;i++) if(a>=gates[i][0]) return {stop:i,answer:gates[i][1]};
+      return {stop:gates.length,answer:"D"};
+    };
+    const lowFirst:[number,string][]=[[40,"C"],[70,"B"],[90,"A"]];
+    const highFirst:[number,string][]=[[90,"A"],[70,"B"],[40,"C"]];
+    const low=walk(lowFirst), high=walk(highFirst);
+    const path=(gates:[number,string][],result:{stop:number;answer:string},right:boolean)=>
+      <div className={`gate-path ${right?"good":"bad"}`}>
+        <h5>{right?"높은 기준부터":"낮은 기준부터"} 살펴보기</h5>
+        {gates.map(([limit,label],i)=>
+          <div key={limit} className={i<result.stop?"passed":i===result.stop?"stopped":"skipped"}>
+            <span>{a}점이 {limit}점 이상?</span>
+            <b>{i<result.stop?"아니오":i===result.stop?`예 → ${label}`:"보지 않음"}</b>
+          </div>)}
+        <strong>{result.answer} 등급</strong>
+      </div>;
+    return <div className="hands-lab"><RangeControl label="점수" value={a} min={0} max={100} onChange={setA}/>
+      <div className="grade-track"><span className={grade==="D"?"on":""}>0~39<b>D</b></span><span className={grade==="C"?"on":""}>40~69<b>C</b></span><span className={grade==="B"?"on":""}>70~89<b>B</b></span><span className={grade==="A"?"on":""}>90~100<b>A</b></span></div>
+      <div className="result-bubble"><span>{a}점이 들어간 칸</span><b>{grade} 등급</b></div>
+      <div className="gate-race">{path(lowFirst,low,false)}<i>vs</i>{path(highFirst,high,true)}</div>
+      <p className={`lab-coach ${low.answer!==grade?"warn":""}`}>{low.answer!==grade
+        ?`낮은 기준부터 보면 ${a}점은 ${lowFirst[low.stop][0]}점 관문에서 바로 멈춰 ${low.answer}가 돼요. 하지만 맞는 등급은 ${grade}랍니다.`
+        :`${a}점은 두 순서 모두 ${grade}가 나와요. 점수를 더 올려 두 답이 갈라지는 곳을 찾아보세요.`}</p>
+    </div>
   }
   if(p.id==="I") {
     const possible=a===1||b===1||(a===2&&b===2);
@@ -159,8 +211,25 @@ export default function ProblemInteraction({p}:{p:Problem}) {
     </div><div className="distance-card"><span>중심에서 나무까지와 반지름 비교</span><b>{x}² + {y}² = {d}</b><b>반지름 5² = 25</b><strong className={d<25?"inside":d===25?"on-circle":"outside"}>{status}</strong><small>{d<25?"빨간 점이 굵은 원 안쪽에 있어요.":d===25?"빨간 점이 굵은 원 선 위에 정확히 있어요.":"빨간 점이 굵은 원 선보다 바깥에 있어요."}</small></div></div></div>
   }
   if(p.id==="K") {
-    const total=17*60+40+a,hour=Math.floor(total/60)%24,minute=total%60;
-    return <div className="hands-lab oven-lab"><RangeControl label="오븐 요리 시간(분)" value={a} min={0} max={180} onChange={setA}/><div className="time-flow"><div><span>오븐 시작</span><b>17:40</b></div><i>🔥 ＋ {a}분</i><div><span>요리 완성</span><b>{String(hour).padStart(2,"0")}:{String(minute).padStart(2,"0")}</b></div></div><p className="lab-coach">오븐 시간이 60분을 넘을 때 끝나는 시각이 어떻게 바뀌는지 살펴보세요.</p></div>
+    // 관찰 질문의 답이 "전부 분으로 바꾸기"인데 예전 화면은 17:40 ＋ 80분 → 19:00만
+    // 보여 줬습니다. 정작 물어본 방법이 통째로 빠져 있었어요. 이제 변환 과정을 단계로
+    // 펼쳐, 이 사슬이 그대로 해결 전략 단계의 알고리즘이 되게 합니다.
+    const startMin=17*60+40, total=startMin+a;
+    const hour=Math.floor(total/60)%24, minute=total%60;
+    const pad=(v:number)=>String(v).padStart(2,"0");
+    return <div className="hands-lab oven-lab"><RangeControl label="오븐 요리 시간(분)" value={a} min={0} max={180} onChange={setA}/>
+      <div className="time-flow"><div><span>오븐 시작</span><b>17:40</b></div><i>🔥 ＋ {a}분</i><div><span>요리 완성</span><b>{pad(hour)}:{pad(minute)}</b></div></div>
+      <div className="minute-chain">
+        <div><span>① 시작 시각을 분으로</span><b>17×60＋40</b><em>{startMin}분</em></div>
+        <i>↓</i>
+        <div><span>② 요리 시간을 더하면</span><b>{startMin}＋{a}</b><em>{total}분</em></div>
+        <i>↓</i>
+        <div><span>③ 60분씩 묶으면</span><b>{total}÷60</b><em>{Math.floor(total/60)}묶음 · {minute}분 남음</em></div>
+        <i>↓</i>
+        <div className="chain-end"><span>④ 묶음은 시, 남은 수는 분</span><b>{Math.floor(total/60)}시 {minute}분</b><em>{Math.floor(total/60)>=24?`24를 넘어 ${pad(hour)}시로 돌아와요`:`${pad(hour)}:${pad(minute)}`}</em></div>
+      </div>
+      <p className="lab-coach">시와 분을 따로 더하면 60분이 넘을 때마다 헷갈려요. <b>전부 분으로 바꾸면</b> 더하기 한 번으로 끝나고, 마지막에 60으로 나누어 다시 시와 분으로 돌리면 됩니다.</p>
+    </div>
   }
   if(p.id==="L") return <div className="hands-lab"><RangeControl label="N" value={a} min={1} max={8} onChange={setA}/><div className="star-lab"><b>{"★".repeat(2*a-1)}</b><span>2×{a}−1 = {2*a-1}개</span></div><p className="lab-coach">N이 1 커질 때 별은 몇 개 늘어나나요?</p></div>;
   if(p.id==="M") return <div className="hands-lab"><RangeControl label="층 수 N" value={a} min={1} max={7} onChange={setA}/><div className="triangle-lab">{Array.from({length:a},(_,i)=><div key={i}><span>{i+1}층</span><b>{"★".repeat(i+1)}</b></div>)}</div><p className="lab-coach">층 번호와 그 줄의 별 개수를 비교해 보세요.</p></div>;

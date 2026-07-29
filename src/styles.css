@@ -381,11 +381,14 @@ footer{text-align:center;padding:34px;color:var(--muted);border-top:1px solid va
 .triangle-count b{font-size:22px;color:var(--accent)}
 .selected-tiling{display:grid;gap:10px;place-items:center;background:#fff;border:2px solid var(--accent);border-radius:20px;padding:18px;overflow:hidden}
 .selected-tiling>span{font-weight:900;color:var(--accent)}
-.diamond-svg{display:block;width:min(620px,100%);height:auto}
-.tiling-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:9px}
+/* viewBox가 (n×60+6)×110이라 폭을 620px로 고정하면 세로가 그에 맞춰 늘어납니다.
+   n=1에서 620×1033px까지 부풀어 화면을 벗어났어요. 높이를 고정하고 폭이 n에 따라
+   늘어나게 하면, 삼각형 크기가 n과 무관하게 같아서 "띠가 길어진다"가 눈에 보입니다. */
+.diamond-svg{display:block;height:132px;width:auto;max-width:100%;margin:auto}
+.tiling-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:9px}
 .tiling-tabs button{display:grid;gap:8px;place-items:center;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px;color:var(--ink);cursor:pointer}
 .tiling-tabs button.active{border:3px solid var(--accent);background:#f4f1ff}
-.tiling-tabs .diamond-svg{width:100%;max-height:70px}
+.tiling-tabs .diamond-svg{height:46px;width:auto;max-width:100%}
 .tiling-tabs b{font-size:12px}
 
 /* 가로등: 칸 안이 아니라 두 칸 사이의 변에 가로등을 둔다. */

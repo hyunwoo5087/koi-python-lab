@@ -14,7 +14,10 @@ import ProblemStage from "./interactions/registry";
 import { ButtonRuleExplorer } from "./interactions/ButtonInteractions";
 import { preloadPython } from "./lib/pythonRunner";
 
-const STAGES = ["요구 찾기", "작은 예", "핵심 질문", "규칙 발견", "해결 전략", "코드 확인"];
+// "작은 예"는 이 단계에서 실제로 하는 일(그림과 숫자를 직접 바꿔 보며 관찰하기)을
+// 가리키지 못했습니다. 특히 문제 G처럼 100억을 다루는 화면에서는 "작은"이 사실과
+// 어긋나기까지 했어요.
+const STAGES = ["요구 찾기", "직접 해 보기", "핵심 질문", "규칙 발견", "해결 전략", "코드 확인"];
 
 type StoredStages = Record<string, number>;
 type StoredNotes = Record<string, string>;
@@ -227,7 +230,7 @@ export default function App() {
                 {stage === 3 && (
                   <div className="insight modern-card">
                     <div className="spark">✦</div>
-                    <p>작은 예에서 발견한 규칙</p>
+                    <p>직접 해 보며 발견한 규칙</p>
                     <h3>{problem.insight}</h3>
                     {/* Was an uncontrolled textarea: whatever the student wrote here
                         vanished the moment they moved off the step. */}

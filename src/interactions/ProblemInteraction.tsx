@@ -103,8 +103,26 @@ export default function ProblemInteraction({p}:{p:Problem}) {
     return <div className="hands-lab"><RangeControl label="고추장 무게(kg)" value={kg} min={0} max={25} onChange={setA}/><div className="jar-board">{Array.from({length:jars},(_,i)=>{const amount=Math.min(5,kg-i*5);return <div key={i}><span>🏺</span><b>{amount}kg</b><i style={{height:`${amount/5*100}%`}}/></div>})}</div><div className="split-results"><div><span>담는 데 필요한 항아리</span><b>{jars}개</b></div><div><span>꽉 차서 팔 수 있는 항아리</span><b>{full}개 · {full*150000}원</b></div></div></div>
   }
   if(p.id==="G") {
-    const values=[12,100,10000000000], kg=values[Math.min(a,2)], jars=Math.ceil(kg/5),full=Math.floor(kg/5);
-    return <div className="hands-lab"><div className="quick-values">{values.map((v,i)=><button key={v} className={Math.min(a,2)===i?"active":""} onClick={()=>setA(i)}>{v.toLocaleString()}kg</button>)}</div><div className="big-number-flow"><div><span>필요한 항아리</span><code>{`(${kg}+4)//5`}</code><b>{jars.toLocaleString()}개</b></div><div><span>팔 수 있는 항아리</span><code>{`${kg}//5`}</code><b>{full.toLocaleString()}개</b></div></div><p className="lab-coach">수가 아주 커져도 5씩 계속 빼지 않고 식을 한 번만 계산해요.</p></div>
+    // 예전 예시는 100kg과 100억kg이 둘 다 5의 배수라, 두 답이 똑같이 나와 이 문제가 다루는
+    // "꽉 찬 것만 판다"는 차이가 보이지 않았습니다. 나머지가 남는 수로 바꾸고, 파이썬 식
+    // 대신 5kg씩 담는 실제 상황으로 보여 줍니다. (코드는 해결 전략 단계에서 만나요.)
+    const values=[12,103,10000000003], kg=values[Math.min(a,2)];
+    const full=Math.floor(kg/5), left=kg%5, jars=full+(left?1:0);
+    const seconds=Math.round(full/5);
+    return <div className="hands-lab"><div className="quick-values">{values.map((v,i)=><button key={v} className={Math.min(a,2)===i?"active":""} onClick={()=>setA(i)}>{v.toLocaleString()}kg</button>)}</div>
+      <div className="jar-fill-story">
+        <div><span>5kg씩 꽉 채우면</span><b>{full.toLocaleString()}항아리</b><small>이건 팔 수 있어요</small></div>
+        <i>＋</i>
+        <div className={left?"leftover":"leftover none"}><span>남는 고추장</span><b>{left}kg</b><small>{left?"덜 찬 항아리 1개가 더 필요해요":"남는 것이 없어요"}</small></div>
+        <i>＝</i>
+        <div className="total"><span>필요한 항아리</span><b>{jars.toLocaleString()}개</b><small>파는 건 {full.toLocaleString()}개뿐</small></div>
+      </div>
+      <div className="counting-race">
+        <div className="slow"><span>5씩 하나하나 세면</span><b>{full.toLocaleString()}번</b><small>{seconds>60?`1초에 5번 세어도 ${Math.round(seconds/60/60/24/365).toLocaleString()}년 넘게 걸려요`:"셀 수 있어요"}</small></div>
+        <i>↔</i>
+        <div className="fast"><span>나눗셈으로 구하면</span><b>1번</b><small>수가 아무리 커져도 똑같아요</small></div>
+      </div>
+      <p className="lab-coach">{left?`${kg.toLocaleString()}kg은 5로 나누어떨어지지 않아요. 남은 ${left}kg 때문에 항아리는 하나 더 필요하지만, 그 항아리는 팔 수 없어요.`:`${kg.toLocaleString()}kg은 5로 딱 나누어떨어져서 필요한 항아리와 파는 항아리가 같아요.`}</p></div>
   }
   if(p.id==="H") {
     const grade=a>=90?"A":a>=70?"B":a>=40?"C":"D";
@@ -120,9 +138,25 @@ export default function ProblemInteraction({p}:{p:Problem}) {
   }
   if(p.id==="J") {
     const x=a,y=b,d=x*x+y*y,status=d<25?"원 안":d===25?"원 둘레":"원 밖";
-    const angle=Math.atan2(-y,x)*180/Math.PI;
-    const distance=Math.sqrt(d)*10;
-    return <div className="hands-lab"><div className="two-controls"><RangeControl label="나무의 가로 위치 x" value={x} min={0} max={7} onChange={setA}/><RangeControl label="나무의 세로 위치 y" value={y} min={0} max={7} onChange={setB}/></div><div className="tree-legend"><span className="inside-key">초록색 안쪽</span><span className="edge-key">굵은 선 = 원 둘레</span><span className="outside-key">회색 바깥쪽</span></div><div className="tree-lab"><div className="tree-plot"><div className="tree-circle"><span className="origin">중심</span><span className="radius-line"/><span className="radius-mark">반지름 5</span><span className="distance-line" style={{width:`${distance}%`,transform:`rotate(${angle}deg)`}}/><span className={`moving-tree ${d<25?"is-inside":d===25?"is-edge":"is-outside"}`} style={{left:`${50+x*10}%`,top:`${50-y*10}%`}}><i>🌳</i><b>나무 위치</b></span></div></div><div className="distance-card"><span>중심에서 나무까지와 반지름 비교</span><b>{x}² + {y}² = {d}</b><b>반지름 5² = 25</b><strong className={d<25?"inside":d===25?"on-circle":"outside"}>{status}</strong><small>{d<25?"빨간 점이 굵은 원 안쪽에 있어요.":d===25?"빨간 점이 굵은 원 선 위에 정확히 있어요.":"빨간 점이 굵은 원 선보다 바깥에 있어요."}</small></div></div></div>
+    const where=d<25?"is-inside":d===25?"is-edge":"is-outside";
+    // 예전에는 원을 div로 그리고 나무를 left/top 퍼센트로 놓았는데, 테두리 5px 때문에
+    // 퍼센트의 기준(안쪽 상자)과 눈에 보이는 원의 반지름이 어긋났습니다. 그래서 (1,5)처럼
+    // 살짝 바깥인 점이 테두리 한가운데 찍혀 "원 안"처럼 보였습니다. 원과 점을 같은
+    // 좌표계에 그리는 SVG로 바꿔, 보이는 위치와 계산 결과가 항상 일치하게 했습니다.
+    const grid=[-8,-6,-4,-2,2,4,6,8];
+    return <div className="hands-lab"><div className="two-controls"><RangeControl label="나무의 가로 위치 x" value={x} min={0} max={7} onChange={setA}/><RangeControl label="나무의 세로 위치 y" value={y} min={0} max={7} onChange={setB}/></div><div className="tree-legend"><span className="inside-key">초록색 안쪽</span><span className="edge-key">굵은 선 = 원 둘레</span><span className="outside-key">회색 바깥쪽</span></div><div className="tree-lab"><div className="tree-plot">
+      <svg className={`tree-svg ${where}`} viewBox="-8.8 -8.8 17.6 17.6" role="img" aria-label={`중심에서 가로 ${x}, 세로 ${y}만큼 떨어진 나무는 ${status}에 있어요`}>
+        {grid.map(v=><g key={v}><line className="tree-grid" x1={v} y1={-8.8} x2={v} y2={8.8}/><line className="tree-grid" x1={-8.8} y1={v} x2={8.8} y2={v}/></g>)}
+        <circle className="tree-area" cx={0} cy={0} r={5}/>
+        <line className="tree-radius" x1={0} y1={0} x2={5} y2={0}/>
+        <text className="tree-radius-label" x={2.5} y={1.5} textAnchor="middle">반지름 5</text>
+        <line className="tree-distance" x1={0} y1={0} x2={x} y2={-y}/>
+        <circle className="tree-origin" cx={0} cy={0} r={0.42}/>
+        <text className="tree-origin-label" x={0} y={-0.9} textAnchor="middle">중심</text>
+        <text className="tree-icon" x={x} y={-y-0.85} textAnchor="middle">🌳</text>
+        <circle className="tree-point" cx={x} cy={-y} r={0.42}/>
+      </svg>
+    </div><div className="distance-card"><span>중심에서 나무까지와 반지름 비교</span><b>{x}² + {y}² = {d}</b><b>반지름 5² = 25</b><strong className={d<25?"inside":d===25?"on-circle":"outside"}>{status}</strong><small>{d<25?"빨간 점이 굵은 원 안쪽에 있어요.":d===25?"빨간 점이 굵은 원 선 위에 정확히 있어요.":"빨간 점이 굵은 원 선보다 바깥에 있어요."}</small></div></div></div>
   }
   if(p.id==="K") {
     const total=17*60+40+a,hour=Math.floor(total/60)%24,minute=total%60;

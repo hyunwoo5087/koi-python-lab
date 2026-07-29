@@ -1,11 +1,13 @@
 type HeaderProps = {
   view: "home" | "problem";
   stages: string[];
+  done: number;
+  total: number;
   onHome: () => void;
   onOpenMenu: () => void;
 };
 
-export default function AppHeader({ view, stages, onHome, onOpenMenu }: HeaderProps) {
+export default function AppHeader({ view, stages, done, total, onHome, onOpenMenu }: HeaderProps) {
   return (
     <header className={`app-header ${view === "problem" ? "no-steps" : ""}`}>
       <div className="header-brand-row">
@@ -31,7 +33,13 @@ export default function AppHeader({ view, stages, onHome, onOpenMenu }: HeaderPr
         </div>
       )}
 
-      <button className="profile-button" type="button" aria-label="학습자 메뉴">●</button>
+      {/* 예전에는 아무 동작 없는 초록 점이었는데 aria-label만 "학습자 메뉴"라고 읽혀,
+          누르면 뭔가 열릴 것처럼 보이고 실제로는 아무 일도 없었습니다. 눌러서 지도로
+          돌아가는 진행 상황 표시로 바꿨습니다. */}
+      <button className="map-button" type="button" onClick={onHome} aria-label={`지도로 돌아가기. 15문제 중 ${done}문제 완료`}>
+        <b>{done}<i>/{total}</i></b>
+        <small>지도</small>
+      </button>
     </header>
   );
 }

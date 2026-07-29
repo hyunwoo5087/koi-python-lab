@@ -123,6 +123,8 @@ export default function App() {
       <AppHeader
         view={view}
         stages={STAGES}
+        done={done.length}
+        total={problems.length}
         onHome={() => setView("home")}
         onOpenMenu={() => setDrawerOpen(true)}
       />

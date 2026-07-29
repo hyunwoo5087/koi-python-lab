@@ -2,6 +2,12 @@
 
 현재 공개된 KOI Python Lab 12번 배포본을 바탕으로 만든 **독립적인 편집용 소스 사본**입니다. 이 폴더를 수정하거나 GitHub에 올려도 기존 배포 사이트는 바뀌지 않습니다.
 
+## 배포된 사이트
+
+<https://hyunwoo5087.github.io/koi-python-lab/>
+
+`main` 브랜치에 푸시하면 `.github/workflows/deploy.yml`이 자동으로 빌드해서 GitHub Pages에 올립니다.
+
 ## 바로 실행하기
 
 Node.js 20.19 이상 또는 22.12 이상을 준비한 뒤 프로젝트 폴더에서 실행합니다.
@@ -129,3 +135,7 @@ Stitch에서 화면을 새로 설계하거나 수정할 때 `stitch/PROJECT_CONT
 - 이 검사기는 학습용 복수 테스트 검사기입니다. KOISTUDY 공식 채점의 모든 비공개 테스트를 대신하지는 않습니다.
 - `public`의 파일명이나 경로를 바꾸면 React 코드의 `/assets/...` 경로도 함께 바꿉니다.
 - 외부 웹 글꼴을 사용하지 않고 운영체제의 한글 글꼴을 우선 사용하므로 오프라인 개발에서도 글자가 깨지지 않습니다.
+
+## Stitch 이미지 기반 UI 사본
+
+`stitch/reference-final.png`를 참고한 반응형 UI가 적용되어 있습니다. 홈 대시보드, A~O 문제 지도, STEP 2 학습 인터랙션, STEP 6 코드·테스트 화면이 실제 문제 데이터 및 기존 판정 로직과 연결됩니다. 구현 범위와 검증 내용은 `stitch/IMPLEMENTATION_NOTES.md`를 참고하세요.

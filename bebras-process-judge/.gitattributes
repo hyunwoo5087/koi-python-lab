@@ -1,0 +1,6 @@
+# Windows 배치 파일은 반드시 CRLF로 유지해야 합니다.
+# LF로 저장되면 CMD가 goto 라벨을 제대로 읽지 못해 창이 그냥 닫힙니다.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.sql text eol=lf
+*.mjs text eol=lf
